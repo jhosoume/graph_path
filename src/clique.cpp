@@ -1,6 +1,6 @@
 #include <Graph.hpp>
 
-int main(void) {
+int main_(void) {
   // Checking if the Vertex and Edges are correctly being created
   // Vertex<int> Vert = Vertex<int>(0, 0);
   // Vertex<int> Vert2 = Vertex<int>(1, 0);

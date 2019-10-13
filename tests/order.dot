@@ -1,0 +1,27 @@
+/*
+Using a graph and relationships just to push things onto different lines.
+Two layout rules:
+1) all items on a given line go into a "rank=same" phrase 
+2) a relationship is needed between the first word on each line and the next line down to
+   force the vertical alignment.
+*/
+digraph {
+    fred
+    harry
+    jack
+    sally
+    mika
+    amy
+    jan
+    {rank=same;
+    fred;
+    harry;
+    jack;
+    sally;
+    mika;
+    amy;
+    jan}
+    jack -> fred
+    jack -> sally
+    fred -> mika
+}

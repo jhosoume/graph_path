@@ -1,11 +1,11 @@
 CC       := g++
-CFLAGS   := -std=c++11 --pedantic -O3
+CFLAGS   := -std=c++11 --pedantic -O3 -Wall -Wextra
 
 SRCDIR   := src
 BUILDDIR := build
 BINDIR	 := bin
 
-TARGET	 := $(BINDIR)/clique
+TARGET	 := $(BINDIR)/cic_paths
 
 SRCEXT   := cpp
 SOURCES  := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))

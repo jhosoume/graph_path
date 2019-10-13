@@ -1,0 +1,34 @@
+digraph CIC_Curriculum {
+    Calculo1 -> PAA [label=4];
+    Calculo1 -> PE ;
+    Calculo1 -> Calculo2 ;
+    APC -> ED ;
+    APC -> LabdeCircuitosLogicos ;
+    APC -> CircuitosLogicos ;
+    FTC -> LC1 ;
+    CircuitosLogicos -> OAC ;
+    LabdeCircuitosLogicos -> OAC ;
+    Calculo2 -> CN ;
+    ED -> PAA ;
+    ED -> CE ;
+    ED -> SI ;
+    ED -> SB ;
+    ED -> IIA ;
+    ED -> LP ;
+    ED -> Redes ;
+    ED -> TAGrafos ;
+    ED -> TP1 ;
+    OAC -> SB ;
+    OAC -> Concorrente ;
+    TP1 -> TP2 ;
+    Algebra1 -> Automatos ;
+    PE -> CE ;
+    TP2 -> Concorrente ;
+    Redes -> Seguranca ;
+    LP -> Compiladores ;
+    LP -> ES ;
+    Concorrente -> SO ;
+    SB -> Compiladores ;
+    Automatos -> Compiladores ;
+}
+

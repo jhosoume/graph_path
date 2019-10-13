@@ -7,6 +7,8 @@
 #include <random>
 #include <limits>
 #include <set>
+#include <map>
+#include <queue>
 
 #include "helper.hpp"
 
@@ -234,6 +236,7 @@ public:
         // Creating and inserting edge
        Edge aux = Edge(dest_pos, weight);
        allVertex.at(src_pos).ownEdges.push_front(aux);
+       allVertex.at(dest_pos).parents.push_front(src_pos);
        numEdges++;
        return;
    }
@@ -334,7 +337,7 @@ public:
      * Function to provide help in retriving the information (printing on the screen) about all the vertices (Vertex) and its edges (Edge).
      * @return Nothing, but prints all the vertices and its edges
      */
-   void print(){
+   void print() {
        std::cout << "\n\nVertex -> Edges\n";
        std::cout << "---------------------------------------\n";
        // Making a loop to retrive the information to be printed.
@@ -353,6 +356,27 @@ public:
        }
        std::cout << "---------------------------------------\n";
        return;
+   }
+
+   void writeDigraphAsDot(std::string name, std::string file) {
+       std::ofstream outfile;
+       outfile.open(file, std::ios::out);
+       outfile << "digraph " << name << " {" << std::endl;
+       for (Vertex<T> vert : allVertex) {
+           outfile << vert.get_id() << " ;" << std::endl;
+       }
+       for (Vertex<T> vert : allVertex) {
+           if (vert.has_neighbours()) {
+               for (auto edge : vert.ownEdges) {
+                   outfile << vert.get_id() << " -> "
+                             << allVertex.at(edge.get_dest()).get_id()
+                             << " [label = " << edge.get_weight() << "]"
+                             << " ;" << std::endl;
+                }
+           }
+       }
+       outfile << "}" << std::endl;
+       outfile.close();
    }
 
 /**
@@ -416,7 +440,7 @@ void findConnected() {
      * information.
      * @return Does not return a value, but prints all the minimal pathways from all the vertices.
      */
-    void FloydWarshall() {
+    std::vector<std::vector<float> > FloydWarshall() {
         // Initiate the matrix that holds the distances (weight) from all the vertices (Vertex), and finally all the
         // minimum pathways.
         std::vector<std::vector<float> > distances = distanceMatrix();
@@ -434,7 +458,7 @@ void findConnected() {
                 std::cout << "--> Vertex " << j << " of id " << allVertex[j]->get_id() << " is "<< distances[i][j] <<  std::endl;
             }
         }
-        return;
+        return distances;
     }
 
     /**
@@ -485,6 +509,42 @@ void findConnected() {
         return total / numVertex;
 
     }
+
+    void printTopologicalOrder(std::string name, std::string file) const {
+        std::vector <Vertex <T> > topOrder = Kahn();
+        std::cout << "---------------------------------------" << std::endl;
+        std::cout << "One of the possible Topological Order" << std::endl;
+        for (int indx = 0; indx < topOrder.size(); ++indx) {
+            std::cout << indx + 1 << " : " << topOrder.at(indx).get_id() << std::endl;
+        }
+        std::cout << "---------------------------------------" << std::endl;
+
+        std::ofstream outfile;
+        outfile.open(file, std::ios::out);
+        outfile << "digraph " << name << " {" << std::endl;
+        outfile << "graph [ordering = \"out\"]" << std::endl;
+        for (Vertex<T> vert : topOrder) {
+            outfile << vert.get_id() << " ;" << std::endl;
+        }
+        outfile << "{rank = same;" << std::endl;
+        for (Vertex<T> vert : topOrder) {
+            outfile << vert.get_id() << " ;" << std::endl;
+        }
+        outfile << "}" << std::endl;
+        for (Vertex<T> vert : allVertex) {
+            if (vert.has_neighbours()) {
+               for (auto edge : vert.ownEdges) {
+                   outfile << vert.get_id() << " -> "
+                             << allVertex.at(edge.get_dest()).get_id()
+                             << " [label = " << edge.get_weight() << "]"
+                             << " ;" << std::endl;
+                }
+           }
+       }
+       outfile << "}" << std::endl;
+       outfile.close();
+    }
+
 
 private:
     size_t numVertex; ///< total number of vertices (Vertex) cointained in the LinkedGraph and stored in allVertex
@@ -630,6 +690,37 @@ private:
         // Since some connections are computed twice, needs to be divided by two
         return (triangles / 2) / max_triangles;
     }
+
+    std::vector< Vertex <T> > Kahn() const {
+        std::map< int, int > verticiesIndegree;
+        std::vector <Vertex <T> > topOrder;
+        std::queue <Vertex <T> > zeroIndegree;
+        int indegree;
+        Vertex<T> neighbour;
+        Vertex<T> vert;
+        for (Vertex <T> vert : allVertex) {
+            indegree = vert.indegree();
+            verticiesIndegree.insert( std::pair< int, int>(vert.get_pos(), indegree));
+            if (indegree == 0) {
+                zeroIndegree.push(vert);
+            }
+        }
+        while (!zeroIndegree.empty()) {
+            vert = zeroIndegree.front();
+            for (Edge edge : vert.ownEdges) {
+                neighbour = allVertex.at(edge.get_dest());
+                --verticiesIndegree.at(neighbour.get_pos());
+                if (verticiesIndegree.at(neighbour.get_pos()) == 0) {
+                    zeroIndegree.push(neighbour);
+                }
+            }
+            topOrder.push_back(vert);
+            std::cout << vert.get_id() << std::endl;
+            zeroIndegree.pop();
+        }
+        return topOrder;
+    }
+
 
 
 };

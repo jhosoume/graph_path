@@ -175,6 +175,10 @@ public:
       return ownEdges.size();
     }
 
+    int indegree() const {
+        return parents.size();
+    }
+
     /**
      * Auxiliary function to obtain the position of the neighbours in the graph stored in a set.
      * @return A set of positions defined as integers.
