@@ -42,8 +42,32 @@ public:
      * @param edges a list off edges pointers
      * @return A Vertex with the value specified.
      */
+    Vertex(T value, size_t pos, std::list< Edge > edges, float weight)
+    : id{value}, position{pos}, ownEdges{edges}, weight{weight}
+    {}
+
+    /**
+     * Vertex constructor.
+     * Defines default values for the basic attributes.
+     * @param value an argument with the base type for the vertex. Defines the desired information.
+     * @param pos represents the vector position on the graph (LinkedGraph) class.
+     * @param edges a list off edges pointers
+     * @return A Vertex with the value specified.
+     */
     Vertex(T value, size_t pos, std::list< Edge > edges)
-    : id{value}, position{pos}, ownEdges{edges}
+    : id{value}, position{pos}, ownEdges{edges}, weight{weight}
+    {}
+
+    /**
+     * Simpler Vertex constructor.
+     * Defines default values for the basic attributes. In this case, the list of edges isn't necessary. The
+     * Vertex is considered as having no Edge.
+     * @param value an argument with the base type for the vertex. Defines the desired information.
+     * @param pos represents the vector position on the graph class.
+     * @return The Vertex with the value specified, Edge list field is empty.
+     */
+    Vertex(T value, size_t pos, float weight)
+    : id{value}, position{pos}, weight{weight}
     {}
 
     /**
@@ -55,7 +79,7 @@ public:
      * @return The Vertex with the value specified, Edge list field is empty.
      */
     Vertex(T value, size_t pos)
-    : id{value}, position{pos}
+    : id{value}, position{pos}, weight{0}
     {}
 
     /**
@@ -202,6 +226,7 @@ public:
 
     std::list< Edge > ownEdges; ///< List of pointers of edges (Edges) that originates of the given vertex.
     std::list< size_t > parents; ///< All vexters that has edges that have this vertex as destination.
+    float weight;
 
 private:
     T id; ///< Identification of the Vertex, may store names or other information.

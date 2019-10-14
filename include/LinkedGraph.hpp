@@ -153,6 +153,22 @@ public:
    }
 
    /**
+    * Auxiliary function to insert a Vertex in the LinkedGraph vector of vertices.
+    * @param value Identification of the Vertex to be inserted.
+    * @return Nothing, but the LinkedGraph is altered
+    */
+    void insertVertex(T value, float weight) {
+        numVertex++;
+        // Creates a new Vertex in the heap.
+        Vertex<T> aux = Vertex<T>(value, numVertex - 1, weight);
+        allVertex.push_back(aux);
+        if ( numVertex < 0 || numVertex > allVertex.size())
+            // Throws an error if the alloc was not properly done.
+            throw std::out_of_range("There is a problem Houston! Please check the numVertex attribute from the Linked Graph!\n");
+        return;
+   }
+
+   /**
     * Auxiliary function to insert a Bidirected Edge (as in a non directed graph) in the LinkedGraph vector of vertices.
     * @param src_pos Position of the source Vertex on the vector of vertices of the LinkedGraph.
     * @param dest_pos Position of the destination Vertex on the vector of vertices of the LinkedGraph.
