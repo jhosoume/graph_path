@@ -2,6 +2,89 @@
 
 int main(void) {
   // Sets to true if want graph with the name of the classes
+  std::cout << "Ciência da Computaçao" << std::endl;
+  if (true) {
+      // Creates a Digraph of mandatory UnB CiC Classes
+      LinkedGraph<std::string> cic_curriculum = LinkedGraph<std::string>();
+
+      // Adding Vertices
+      cic_curriculum.insertVertex("Calculo1", 6);
+      cic_curriculum.insertVertex("ISC", 4);
+      cic_curriculum.insertVertex("APC", 6);
+      cic_curriculum.insertVertex("InfoSoc", 2);
+      cic_curriculum.insertVertex("FTC", 4);
+      cic_curriculum.insertVertex("CircuitosLogicos", 4);
+      cic_curriculum.insertVertex("LabdeCircuitosLogicos", 2);
+      cic_curriculum.insertVertex("Calculo2", 6);
+      cic_curriculum.insertVertex("IAL", 4);
+      cic_curriculum.insertVertex("ED", 4);
+      cic_curriculum.insertVertex("OAC", 4);
+      cic_curriculum.insertVertex("TP1", 4);
+      cic_curriculum.insertVertex("Algebra1", 4);
+      cic_curriculum.insertVertex("CN", 4);
+      cic_curriculum.insertVertex("PE", 4);
+      cic_curriculum.insertVertex("LC1", 4);
+      cic_curriculum.insertVertex("TP2", 4);
+      cic_curriculum.insertVertex("TAGrafos", 4);
+      cic_curriculum.insertVertex("Redes", 4);
+      cic_curriculum.insertVertex("LP", 4);
+      cic_curriculum.insertVertex("Concorrente", 4);
+      cic_curriculum.insertVertex("ES", 4);
+      cic_curriculum.insertVertex("BD", 4);
+      cic_curriculum.insertVertex("IIA", 4);
+      cic_curriculum.insertVertex("SB", 4);
+      cic_curriculum.insertVertex("SO", 6);
+      cic_curriculum.insertVertex("Automatos", 4);
+      cic_curriculum.insertVertex("SI", 4);
+      cic_curriculum.insertVertex("CE", 4);
+      cic_curriculum.insertVertex("PAA", 4);
+      cic_curriculum.insertVertex("Compiladores", 4);
+      cic_curriculum.insertVertex("Seguranca", 4);
+      cic_curriculum.insertVertex("MetCien", 4);
+      std::cout << "The CIC Curriculum Graph has " << cic_curriculum.num_vertices() << " Vertices\n";
+
+      // Adding Edges (Directed weightned)
+      cic_curriculum.insertConnection("APC", "CircuitosLogicos", 6);
+      cic_curriculum.insertConnection("APC", "LabdeCircuitosLogicos", 6);
+      cic_curriculum.insertConnection("APC", "ED", 6);
+      cic_curriculum.insertConnection("Calculo1", "Calculo2", 6);
+      cic_curriculum.insertConnection("CircuitosLogicos", "OAC", 4);
+      cic_curriculum.insertConnection("LabdeCircuitosLogicos", "OAC", 2);
+      cic_curriculum.insertConnection("ED", "TP1", 4);
+      cic_curriculum.insertConnection("Calculo2", "CN", 6);
+      cic_curriculum.insertConnection("Calculo1", "PE", 6);
+      cic_curriculum.insertConnection("FTC", "LC1", 4);
+      cic_curriculum.insertConnection("TP1", "TP2", 4);
+      cic_curriculum.insertConnection("ED", "TAGrafos", 4);
+      cic_curriculum.insertConnection("ED", "Redes", 4);
+      cic_curriculum.insertConnection("ED", "LP", 4);
+      cic_curriculum.insertConnection("OAC", "Concorrente", 4);
+      cic_curriculum.insertConnection("TP2", "Concorrente", 4);
+      cic_curriculum.insertConnection("LP", "ES", 4);
+      cic_curriculum.insertConnection("ED", "IIA", 4);
+      cic_curriculum.insertConnection("OAC", "SB", 4);
+      cic_curriculum.insertConnection("ED", "SB", 4);
+      cic_curriculum.insertConnection("Concorrente", "SO", 4);
+      cic_curriculum.insertConnection("Algebra1", "Automatos", 4);
+      cic_curriculum.insertConnection("ED", "SI", 4);
+      cic_curriculum.insertConnection("PE", "CE", 4);
+      cic_curriculum.insertConnection("ED", "CE", 4);
+      cic_curriculum.insertConnection("Calculo1", "PAA", 6);
+      cic_curriculum.insertConnection("ED", "PAA", 4);
+      cic_curriculum.insertConnection("LP", "Compiladores", 4);
+      cic_curriculum.insertConnection("SB", "Compiladores", 4);
+      cic_curriculum.insertConnection("Automatos", "Compiladores", 6);
+      cic_curriculum.insertConnection("Redes", "Seguranca", 4);
+
+      std::cout << "The CIC Curriculum Graph has " << cic_curriculum.num_edges() << " Edges\n";
+      cic_curriculum.print();
+      cic_curriculum.printTopologicalOrder("CIC_TopologicalOrder", "CIC_TopologicalOrder.dot");
+      cic_curriculum.writeDigraphAsDot("CIC_Curriculum", "all_cic_curriculum.dot");
+      cic_curriculum.CriticalPath(5);
+  }
+
+
+  // Sets to true if want graph with the classes codes
   if (true) {
       // Creates a Digraph of mandatory UnB CiC Classes
       LinkedGraph<std::string> cic_curriculum = LinkedGraph<std::string>();

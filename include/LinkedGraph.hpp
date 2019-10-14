@@ -573,6 +573,8 @@ void findConnected() {
                       << allVertex.at(src).get_id()
                       << " to " << allVertex.at(dest).get_id()
                       << " | Total cost: " << long_path.cost
+                      << " + Vertex cost " << allVertex.at(dest).weight
+                      << " = " << allVertex.at(dest).weight + long_path.cost
                       << std::endl;
             std::cout << "      Total Path in topological order: " << std::endl;
             for (int indx = 0; indx < full_path.size(); ++indx) {
@@ -620,6 +622,8 @@ void findConnected() {
         std::cout << allVertex.at(src).get_id()
                   << " to " << allVertex.at(dest).get_id()
                   << " | Total cost: " << long_path.cost
+                  << " + Vertex cost " << allVertex.at(dest).weight
+                  << " = " << allVertex.at(dest).weight + long_path.cost
                   << std::endl;
         std::cout << "      Total Path in topological order: " << std::endl;
         std::vector<Edge> second_path_edges;
