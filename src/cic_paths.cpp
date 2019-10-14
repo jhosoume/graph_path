@@ -77,7 +77,7 @@ int main(void) {
   cic_curriculum.print();
   cic_curriculum.printTopologicalOrder("CIC_TopologicalOrder", "CIC_TopologicalOrder.dot");
   cic_curriculum.writeDigraphAsDot("CIC_Curriculum", "all_cic_curriculum.dot");
-  cic_curriculum.CriticalPath();
+  cic_curriculum.CriticalPath(5);
 
     return 0;
 }

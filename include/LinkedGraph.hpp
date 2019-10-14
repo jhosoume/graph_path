@@ -372,8 +372,35 @@ public:
                for (auto edge : vert.ownEdges) {
                    outfile << vert.get_id() << " -> "
                              << allVertex.at(edge.get_dest()).get_id()
-                             << " [label = " << edge.get_weight() << "]"
-                             << " ;" << std::endl;
+                             << " [label = " << edge.get_weight() << "] ;"
+                             << std::endl;
+                }
+           }
+       }
+       outfile << "}" << std::endl;
+       outfile.close();
+   }
+
+   void writeCPMAsDot(std::string name, std::string file,
+                      std::vector<Edge> edges_colored,
+                      std::string color = "red"
+                     ) {
+       std::ofstream outfile;
+       outfile.open(file, std::ios::out);
+       outfile << "digraph " << name << " {" << std::endl;
+       for (Vertex<T> vert : allVertex) {
+           outfile << vert.get_id() << " ;" << std::endl;
+       }
+       for (Vertex<T> vert : allVertex) {
+           if (vert.has_neighbours()) {
+               for (auto edge : vert.ownEdges) {
+                   outfile << vert.get_id() << " -> "
+                             << allVertex.at(edge.get_dest()).get_id()
+                             << " [label = " << edge.get_weight();
+                    if (std::find(edges_colored.begin(), edges_colored.end(), edge) != edges_colored.end()) {
+                        outfile << ", color = " << color;
+                    }
+                    outfile << " ] ;" << std::endl;
                 }
            }
        }
@@ -502,7 +529,7 @@ void findConnected() {
         return distances;
     }
 
-    void CriticalPath() {
+    void CriticalPath(int num_paths) {
         float inf = std::numeric_limits<float>::infinity();
         std::vector< Path > paths;
         std::vector<std::vector <float>> distances = LongestFloydWarshall();
@@ -511,10 +538,7 @@ void findConnected() {
         Path long_path;
         int src, dest;
         Edge edge;
-        // std::cout << "Path is " << std::endl;
-        // for (int indx : path(2, 16)) {
-        //     std::cout << allVertex.at(indx).get_id() << std::endl;
-        //
+        std::vector <Edge> path_edges;
         for (int src = 0; src < num_vertices(); ++src) {
             for (int dest = 0; dest < num_vertices(); ++dest) {
                 distance = distances.at(src).at(dest);
@@ -523,8 +547,9 @@ void findConnected() {
             }
         }
         std::sort(paths.begin(), paths.end(), pathComparator);
-        std::cout << "The 3 longest paths in the graph are: " << std::endl;
-        for(int indx = 1; indx < 4; ++indx) {
+        std::cout << "--------------------------------" << std::endl;
+        std::cout << "The " << num_paths << " longest paths in the graph are: " << std::endl;
+        for(int indx = 1; indx < num_paths + 1; ++indx) {
             long_path = paths.at(paths.size() - indx);
             src = long_path.src; dest = long_path.dest;
             full_path = path(long_path.src, long_path.dest);
@@ -538,15 +563,31 @@ void findConnected() {
                 std::cout << allVertex.at(full_path.at(indx)).get_id();
                 if (indx + 1 < full_path.size()) {
                     edge = allVertex.at(full_path.at(indx)).getEdgeToNeighbor(full_path.at(indx + 1));
+                    path_edges.push_back(edge);
                     std::cout << " - " << edge.get_weight() << " - > " ;
 
                 } else {
                     std::cout << std::endl;
                 }
-
             }
-
         }
+        Path longest_path = paths.at(paths.size() - 1);
+        std::vector <int> full_longest_path = path(longest_path.src, longest_path.dest);
+        std::vector <Edge> longest_path_edges;
+        for (int indx = 0; indx < full_longest_path.size(); ++indx) {
+            if (indx + 1 < full_longest_path.size()) {
+                edge = allVertex.at(full_longest_path.at(indx)).getEdgeToNeighbor(full_longest_path.at(indx + 1));
+                longest_path_edges.push_back(edge);
+            }
+        }
+        writeCPMAsDot("first_critical_path", "first_critical_path.dot",
+                       longest_path_edges, "blue");
+        std::cout << "--------------------------------" << std::endl;
+        std::cout << "The second longest with different nodes is " << std::endl;
+        for(int indx = 1; indx < num_paths + 1; ++indx) {
+            long_path = paths.at(paths.size() - indx);
+        }
+        std::cout << "--------------------------------" << std::endl;
     }
 
     std::vector<int> path(int src, int dest) {
