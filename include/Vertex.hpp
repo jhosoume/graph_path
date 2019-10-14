@@ -191,6 +191,14 @@ public:
         return neighbours;
     }
 
+    Edge getEdgeToNeighbor(size_t neigh_pos) const {
+        for (Edge edge : ownEdges) {
+            if (edge.get_dest() == neigh_pos)
+                return edge;
+        }
+        return Edge();
+    }
+
 
     std::list< Edge > ownEdges; ///< List of pointers of edges (Edges) that originates of the given vertex.
     std::list< size_t > parents; ///< All vexters that has edges that have this vertex as destination.

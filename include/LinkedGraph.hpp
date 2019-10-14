@@ -9,8 +9,10 @@
 #include <set>
 #include <map>
 #include <queue>
+#include <algorithm>
 
 #include "helper.hpp"
+#include "Path.hpp"
 
 /**
  * \class LinkedGraph
@@ -453,13 +455,114 @@ void findConnected() {
         // Printing out the matrix with the results
         std::cout << "__________Starting Floyd Warshall results! ________" << std::endl;
         for (size_t i = 0; i < num_vertices(); i++) {
-            std::cout << " *The minimul pathway from position " << i << " of id " << allVertex[i]->get_id() << " to: "<<  std::endl;
+            std::cout << " *The minimul pathway from position " << i << " of id " << allVertex[i].get_id() << " to: "<<  std::endl;
             for (size_t j = 0; j < num_vertices(); j++) {
-                std::cout << "--> Vertex " << j << " of id " << allVertex[j]->get_id() << " is "<< distances[i][j] <<  std::endl;
+                std::cout << "--> Vertex " << j << " of id " << allVertex[j].get_id() << " is "<< distances[i][j] <<  std::endl;
             }
         }
         return distances;
     }
+
+     /**
+     * Max Floyd-Warshall algorithm altered to perform search for the longest pathway.
+     * This algorithm takes into consideration the intermediate steps, so it includes a vertex in the path and checks if
+     * this step shortens the path, if so it is now considered as the minimum. Unfortunately, for this algorithm a matrix
+     * of size number of vertices x number of vertices is constructed, nevertheless this matrix is also used to store the
+     * information.
+     * @return Does not return a value, but prints all the minimal pathways from all the vertices.
+     */
+    std::vector<std::vector<float> > LongestFloydWarshall() {
+        // Initiate the matrix that holds the distances (weight) from all the vertices (Vertex), and finally all the
+        // minimum pathways.
+        float inf = std::numeric_limits<float>::infinity();
+        std::vector<std::vector<float> > distances = maxDistanceMatrix();
+        nextVertPos = nextInMaxPath();
+        // Loops to compare all the pathways considering the intermidiate vertices
+        for (size_t k = 0; k < num_vertices(); k++)
+            for (size_t i = 0; i < num_vertices(); i++)
+                for (size_t j = 0; j < num_vertices(); j++) {
+                    if (distances.at(i).at(j) > distances.at(i).at(k) + distances.at(k).at(j)) {
+                        distances.at(i).at(j) = distances.at(i).at(k) + distances.at(k).at(j);
+                        nextVertPos.at(i).at(j) = nextVertPos.at(i).at(k);
+                    }
+                }
+
+
+        // Printing out the matrix with the results
+        // std::cout << "__________Starting Floyd Warshall results! ________" << std::endl;
+        for (size_t i = 0; i < num_vertices(); i++) {
+            // std::cout << " *The longest pathway from position " << i << " of id " << allVertex[i].get_id() << " to: "<<  std::endl;
+            for (size_t j = 0; j < num_vertices(); j++) {
+                if (distances.at(i).at(j) != 0 && distances.at(i).at(j) != inf) {
+                    distances.at(i).at(j) *= -1;
+                }
+                // std::cout << "--> Vertex " << j << " of id " << allVertex[j].get_id() << " is "<< distances[i][j] <<  std::endl;
+            }
+        }
+        return distances;
+    }
+
+    void CriticalPath() {
+        float inf = std::numeric_limits<float>::infinity();
+        std::vector< Path > paths;
+        std::vector<std::vector <float>> distances = LongestFloydWarshall();
+        float distance;
+        std::vector <int> full_path;
+        Path long_path;
+        int src, dest;
+        Edge edge;
+        // std::cout << "Path is " << std::endl;
+        // for (int indx : path(2, 16)) {
+        //     std::cout << allVertex.at(indx).get_id() << std::endl;
+        //
+        for (int src = 0; src < num_vertices(); ++src) {
+            for (int dest = 0; dest < num_vertices(); ++dest) {
+                distance = distances.at(src).at(dest);
+                if (distance != 0 && distance != inf)
+                    paths.push_back(Path(src, dest, distance));
+            }
+        }
+        std::sort(paths.begin(), paths.end(), pathComparator);
+        std::cout << "The 3 longest paths in the graph are: " << std::endl;
+        for(int indx = 1; indx < 4; ++indx) {
+            long_path = paths.at(paths.size() - indx);
+            src = long_path.src; dest = long_path.dest;
+            full_path = path(long_path.src, long_path.dest);
+            std::cout << indx << ". "
+                      << allVertex.at(src).get_id()
+                      << " to " << allVertex.at(dest).get_id()
+                      << " | Total cost: " << long_path.cost
+                      << std::endl;
+            std::cout << "      Total Path in topological order: " << std::endl;
+            for (int indx = 0; indx < full_path.size(); ++indx) {
+                std::cout << allVertex.at(full_path.at(indx)).get_id();
+                if (indx + 1 < full_path.size()) {
+                    edge = allVertex.at(full_path.at(indx)).getEdgeToNeighbor(full_path.at(indx + 1));
+                    std::cout << " - " << edge.get_weight() << " - > " ;
+
+                } else {
+                    std::cout << std::endl;
+                }
+
+            }
+
+        }
+    }
+
+    std::vector<int> path(int src, int dest) {
+        std::vector<int> verticiesInPath;
+        int next = src;
+        if (nextVertPos[src][dest] == -1) {
+            return verticiesInPath;
+        }
+        verticiesInPath.push_back(src);
+        while (next != dest) {
+            next = nextVertPos[next][dest];
+            verticiesInPath.push_back(next);
+        }
+        return verticiesInPath;
+    }
+
 
     /**
      * Bron-Kerbosch algorithm to perform search for all the maximal cliques.
@@ -552,6 +655,7 @@ private:
     std::vector< Vertex<T> > allVertex; ///< Vector (std::vector) that stores pointers to all the vertices (Vertex) bound to the graph (LinkedGraph)
     std::vector<bool> marks; ///< Vector that maps all the vertices that was traversed during DFS or for checking connected components
     std::list<std::list<size_t> > groups; ///< Stores the subgraphs that composes the LinkedGraph
+    std::vector < std::vector < int > > nextVertPos; // Store the position of the next vertex to go in the longest pathway
 
     /**
      * Creates a distance matrix according to the LinkedGraph vertices and edges
@@ -565,11 +669,41 @@ private:
         // put all the information of the edges in the matrix
         for (auto vec : allVertex) {
             size_t pos = vec.get_pos();
+            distances[pos][pos] = 0;
             if (vec.has_neighbours())
                 for (auto next : vec.ownEdges)
                     distances[pos][next.get_dest()] = next.get_weight();
+
         }
         return distances;
+    }
+
+    std::vector <std::vector < float > > maxDistanceMatrix() {
+        // Get the maximum number to represent the infinity (cant traverse the edge at all, so the edge does not exist)
+        float inf = std::numeric_limits<float>::infinity();
+        // creates the edge, maybe it should then be created as a "new" container to further increase its capacity!
+        std::vector<std::vector<float>> distances(num_vertices(), std::vector<float>(num_vertices(), inf));
+        // put all the information of the edges in the matrix
+        for (auto vec : allVertex) {
+            size_t pos = vec.get_pos();
+            distances[pos][pos] = 0;
+            if (vec.has_neighbours())
+                for (auto next : vec.ownEdges)
+                    distances[pos][next.get_dest()] = -next.get_weight();
+        }
+        return distances;
+    }
+
+    std::vector <std::vector < int > > nextInMaxPath() {
+        std::vector<std::vector<int>> nextPos(num_vertices(), std::vector<int>(num_vertices(), -1));
+        for (auto vec : allVertex) {
+            size_t pos = vec.get_pos();
+            nextPos[pos][pos] = pos;
+            if (vec.has_neighbours())
+                for (Edge edge : vec.ownEdges)
+                    nextPos[pos][edge.get_dest()] = edge.get_dest();
+        }
+        return nextPos;
     }
 
     /**
@@ -715,13 +849,14 @@ private:
                 }
             }
             topOrder.push_back(vert);
-            std::cout << vert.get_id() << std::endl;
             zeroIndegree.pop();
         }
         return topOrder;
     }
 
-
+    static bool pathComparator(Path lhs, Path rhs) {
+        return lhs.cost < rhs.cost;
+    }
 
 };
 

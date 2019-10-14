@@ -24,6 +24,9 @@ public:
     : dest{dest}, weight{weight}
     {}
 
+    Edge()
+    : dest{0}, weight{0}
+    {}
     /**
      * Edge destructor.
      * Releases not only the space of the current node, but also its ramifications.
