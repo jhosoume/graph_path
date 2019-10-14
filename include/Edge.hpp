@@ -20,12 +20,16 @@ public:
      * @param weight represents the cost to travel throught this edge.
      * @return The Edge with its cost and destination defined.
      */
+    Edge(size_t src, size_t dest, float weight)
+    : src{src}, dest{dest}, weight{weight}
+    {}
+
     Edge(size_t dest, float weight)
-    : dest{dest}, weight{weight}
+    : src{0}, dest{dest}, weight{weight}
     {}
 
     Edge()
-    : dest{0}, weight{0}
+    : src{0}, dest{0}, weight{0}
     {}
     /**
      * Edge destructor.
@@ -56,10 +60,13 @@ public:
      * @return Boolean to indicates if the equality is true or not.
      */
     bool operator==(const Edge& another_edge) const {
-        return (dest == another_edge.dest) && (weight == another_edge.weight);
+        return (src == another_edge.src) &&
+               (dest == another_edge.dest) &&
+               (weight == another_edge.weight);
     }
 
 private:
+    size_t src;
     size_t dest; ///< Information of the destination of the edge on the vector of vertex stored on the graph/
     float weight; ///< Cost of traversing the edge.
 };

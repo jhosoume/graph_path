@@ -236,7 +236,7 @@ public:
            return;
         }
         // Creating and inserting edge
-       Edge aux = Edge(dest_pos, weight);
+       Edge aux = Edge(src_pos, dest_pos, weight);
        allVertex.at(src_pos).ownEdges.push_front(aux);
        allVertex.at(dest_pos).parents.push_front(src_pos);
        numEdges++;
@@ -584,9 +584,41 @@ void findConnected() {
                        longest_path_edges, "blue");
         std::cout << "--------------------------------" << std::endl;
         std::cout << "The second longest with different nodes is " << std::endl;
-        for(int indx = 1; indx < num_paths + 1; ++indx) {
+        bool has_equal = false;
+        for(int indx = 1; indx < paths.size() + 1; ++indx) {
+            has_equal = false;
             long_path = paths.at(paths.size() - indx);
+            src = long_path.src; dest = long_path.dest;
+            full_path = path(long_path.src, long_path.dest);
+            if(allVertex.at(full_path.at(0)).indegree() == 0) {
+                for (int vert_pos : full_path) {
+                    if (std::find(full_longest_path.begin(), full_longest_path.end(), vert_pos) != full_longest_path.end()) {
+                        has_equal = true;
+                    }
+                }
+                if (!has_equal) {
+                    break;
+                }
+            }
         }
+        std::cout << allVertex.at(src).get_id()
+                  << " to " << allVertex.at(dest).get_id()
+                  << " | Total cost: " << long_path.cost
+                  << std::endl;
+        std::cout << "      Total Path in topological order: " << std::endl;
+        std::vector<Edge> second_path_edges;
+        for (int indx = 0; indx < full_path.size(); ++indx) {
+            std::cout << allVertex.at(full_path.at(indx)).get_id();
+            if (indx + 1 < full_path.size()) {
+                edge = allVertex.at(full_path.at(indx)).getEdgeToNeighbor(full_path.at(indx + 1));
+                second_path_edges.push_back(edge);
+                std::cout << " - " << edge.get_weight() << " - > " ;
+            } else {
+                std::cout << std::endl;
+            }
+        }
+        writeCPMAsDot("second_critical_path", "second_critical_path.dot",
+                       second_path_edges, "green");
         std::cout << "--------------------------------" << std::endl;
     }
 
